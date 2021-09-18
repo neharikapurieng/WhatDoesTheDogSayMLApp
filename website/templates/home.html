@@ -13,17 +13,18 @@
     <img id="logo" src="static/img/Logo 1.svg" class="center"> </img>
     <div class="d-grid gap-2 col-2 mx-auto">
         <button class="btn" onclick="window.location.href='record.html'"><i class="fa fa-play"></i> Record</button>
-        <button class="upload" id= "uploadBtn"><i class="fa fa-upload"></i> Upload<input id='file' type='file' accept=".wav,.mp3" hidden/></button>        <script>document.getElementById('uploadBtn').addEventListener('click', openDialog);
+        <button class="upload" id= "uploadBtn"><i class="fa fa-upload"></i> Upload<input id='file' type='file' accept=".wav,.mp3" hidden/></button>
+        <script>document.getElementById('uploadBtn').addEventListener('click', openDialog);
 
 function openDialog() {
   document.getElementById('file').click();
   if(document.getElementById("file").value != "") {
-   window.location.href="record.html";
+   window.location.href="processing.html";
 }
 }
 </script>
     </div>
-    <button class="google"><img src="static/img/Google.svg"></img> Enabled</button>
+    <button class="google" id= "google"><img src="static/img/Google.svg"></img> Enabled</button>
     <button class="download"><i class="fa fa-download"></i> Download Sample Data</button>
 </body>
 </html>
