@@ -1,46 +1,15 @@
+<!DOCTYPE html>
 <html>
-<head>
+    <head>
     <link href="static/style.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<div class="header">
-        <p class="header__text">What does the dog say?<p>
-        <p class="header__subtext">A webapp that lets you get inside your dog's head<p>
-    </div>
-<body>
-    <img class="logo" src="static/img/Logo 1.svg"/>
-
-
-    <main>
-      <div class="controls">
-          <button type="button" id="record"><i class="fa fa-play"></i> Record</button>
-          <div id="record">
-                     <img src="static/img/record-circle 2.svg"/>
-                    <p class="button__text"> Record</p>
-                </div>
-        <form action="record" method="POST" class="wrapped__form" id="gorecordform">
-            <button class="record__button" type="submit">
-                <div>
-                     <img src="static/img/record-circle 2.svg"/>
-                    <p class="button__text"> Record</p>
-                </div>
-            </button>
-        </form>
-      </div>
-      <ul id="recordings"></ul>
-    </main>
-
-    <img id="logo"  class="center"> </img>
-    <div class="d-grid gap-2 col-2 mx-auto">
-        <button class="btn" onclick="recorder.start();"><i class="fa fa-play"></i> Record</button>
-        <button class="upload" onclick=""><i class="fa fa-upload"></i> Upload</button>
-    </div>
-    <button class="google"><img src="static/img/Google.svg"></img> Enabled</button>
-    <button class="download"><i class="fa fa-download"></i> Download Sample Data</button>
-
+    <body>
+        <p>This is an example of a simple HTML page with one paragraph.</p>
+        <button class="btn"><i class="fa fa-play"></i> Stop</button>
     <script>
       window.addEventListener('DOMContentLoaded', async () => {
         const recordButton = document.getElementById('record');
@@ -66,13 +35,13 @@
                 saveBlob(recording, "test.mp3");
                 chunks = [];
               });
-              recordButton.addEventListener('click', () => {
-                if (recorder.state === 'inactive') {
+              if (recorder.state === 'inactive') {
                   recorder.start();
-                  recordButton.innerText = 'Stop';
-                } else {
+              }
+              recordButton.addEventListener('click', () => {
+                if (recorder.state !== 'inactive') {
                   recorder.stop();
-                  recordButton.innerText = 'Done';
+                  recordButton.innerText = 'Record';
                 }
               });
             } catch {
@@ -141,6 +110,5 @@
 
       }
     </script>
-
-</body>
+    </body>
 </html>

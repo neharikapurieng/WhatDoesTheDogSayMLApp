@@ -8,3 +8,9 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 def my_form():
     print("go home")
     return render_template("home.html") # this should be the name of your html file
+
+
+@app.route('/record', methods=['POST'])
+def go_home():
+    print("recording")
+    return render_template("record.html") # this should be the name of your html file
