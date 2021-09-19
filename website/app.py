@@ -1119,7 +1119,7 @@ def my_form_post():
     # datastore_client.put(audio_entry)
     # Initialize variables
     num_classes = 9
-    model_name = 'dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
+    model_name = 'models/dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
     duration = 5000 # 5 sec
     sr = 44100
     channel = 2

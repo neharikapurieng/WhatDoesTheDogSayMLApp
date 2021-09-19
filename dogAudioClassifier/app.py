@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request, jsonify
 from flask_cors import CORS
 
-# FOR model and utils
+# FOR ml
 import torch
 import numpy as np
 import base64
@@ -29,26 +29,6 @@ CORS(app)
 # Author: lukemelas (github username)
 # Github repo: https://github.com/lukemelas/EfficientNet-PyTorch
 # With adjustments and added comments by workingcoder (github username).
-
-################################################################################
-# Help functions for model architecture
-################################################################################
-
-# GlobalParams and BlockArgs: Two namedtuples
-# Swish and MemoryEfficientSwish: Two implementations of the method
-# round_filters and round_repeats:
-#     Functions to calculate params for scaling model width and depth ! ! !
-# get_width_and_height_from_size and calculate_output_image_size
-# drop_connect: A structural design
-# get_same_padding_conv2d:
-#     Conv2dDynamicSamePadding
-#     Conv2dStaticSamePadding
-# get_same_padding_maxPool2d:
-#     MaxPool2dDynamicSamePadding
-#     MaxPool2dStaticSamePadding
-#     It's an additional function, not used in EfficientNet,
-#     but can be used in other model (such as EfficientDet).
-
 # Parameters for the entire model (stem, all blocks, and head)
 GlobalParams = collections.namedtuple('GlobalParams', [
     'width_coefficient', 'depth_coefficient', 'image_size', 'dropout_rate',
