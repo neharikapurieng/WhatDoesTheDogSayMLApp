@@ -1155,7 +1155,7 @@ def my_form_post():
     af = request.files['user_af']
     print(os.getcwd())
     num_classes = 9
-    model_name = 'model_v1'
+    model_name = 'model_v3'
     duration = 5000  # 5 sec
     sr = 44100
     channel = 2
@@ -1169,14 +1169,19 @@ def my_form_post():
     # load generator
     states = torch.load('models/' + model_name)
     deepNet.load_state_dict(states['model_state_dict'])
+    del states
     deepNet.eval()
     # process image
     aud = AudioUtil.open(af)
     reaud = AudioUtil.resample(aud, sr)
+    del aud
     rechan = AudioUtil.rechannel(reaud, channel)
+    del rechan
     dur_aud = AudioUtil.pad_trunc(rechan, duration)
     shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
+    del dur_aud
     sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
+    del sgram
     aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
     use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     aug_sgram = use_transform(np.array(aug_sgram))
@@ -1184,8 +1189,10 @@ def my_form_post():
     # print(aug_sgram.shape)
     # aug_sgram = aug_sgram.to(device, dtype=torch.float)
     output = deepNet(aug_sgram)
+    del deepNet
     _, preds = torch.max(output, 1)
     result = str(int(preds[0]))
+    del _, preds
     print(result)
 
     a = ["I found something over here", "Hey look here", "Check this out"]
