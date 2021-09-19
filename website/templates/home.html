@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1> What does the dog say? </h1>
@@ -13,15 +14,25 @@
     <img id="logo" src="static/img/Logo 1.svg" class="center"> </img>
     <div class="d-grid gap-2 col-2 mx-auto">
         <button class="btn" onclick="window.location.href='record.html'"><i class="fa fa-play"></i> Record</button>
-        <button class="upload" id= "uploadBtn"><i class="fa fa-upload"></i> Upload<input id='file' type='file' accept=".wav,.mp3" hidden/></button>        <script>document.getElementById('uploadBtn').addEventListener('click', openDialog);
+        <button class="upload" id= "uploadBtn"><i class="fa fa-upload"></i> Upload<input id='file' type='file' accept=".wav,.mp3" hidden/></button>
 
-function openDialog() {
-  document.getElementById('file').click();
-  if(document.getElementById("file").value != "") {
-   window.location.href="record.html";
-}
-}
-</script>
+
+        <label for="audio_file" class="custom-file-upload">
+            <i class="fa fa-cloud-upload"></i> Custom Upload
+        </label>
+
+        <form action="store" method="POST" className="wrapped__form" id="uploadaudioform">
+         <input type = "file" id="audio_file" name = "user_af" accept = ".wav,.mp3" />
+      </form>
+
+
+
+
+         <script>
+            document.getElementById("audio_file").onchange = function() {
+                 document.getElementById("uploadaudioform").submit();
+             }
+ </script>
     </div>
     <button class="google"><img src="static/img/Google.svg"></img> Enabled</button>
     <button class="download"><i class="fa fa-download"></i> Download Sample Data</button>
