@@ -8,6 +8,7 @@
 <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="preload" as="image" href="static/img/Wave.gif">
+    <link rel="preload" as="image" href="static/img/Logo 2.svg">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
@@ -20,7 +21,7 @@
         <button class="btn" type="button" id="record"><i class="fa fa-play"></i> Record</button>
 
 
-        <label for="audio_file" class="custom-file-upload">
+        <label for="audio_file" class="custom-file-upload" id="label">
             <i class="fa fa-cloud-upload"></i> Upload
         </label>
 
@@ -28,13 +29,24 @@
          <input type = "file" id="audio_file" name = "user_af" accept = ".wav,.mp3" />
       </form>
 
+               <h2 class="processing__text" id="woofs"> Connecting the woofs... </h2>
+    <h4 class="blue" id="moments"> This may take a few moments </h4>
+
            </div>
 
 
 
          <script>
             document.getElementById("audio_file").onchange = function() {
+                document.getElementById('logo').src='static/img/Logo 2.svg';
+                document.getElementById('uploadaudioform').style.visibility='hidden';
+                document.getElementById('label').style.display='none';
+                document.getElementById('record').style.display='none';
+                document.getElementById('audio_file').style.display='none';
+                document.getElementById('woofs').style.display='block';
+                document.getElementById('moments').style.display='block';
                  document.getElementById("uploadaudioform").submit();
+
              }
  </script>
 

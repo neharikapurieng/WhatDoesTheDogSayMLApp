@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import request
 from flask import render_template
+from base64 import b64encode
+import random
 
 
 # FOR ml
@@ -26,6 +28,7 @@ from torch.utils import model_zoo
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
 
 ###################################################################################################################
 # Util.py for EfficientNetNotRGB
@@ -1135,12 +1138,68 @@ def my_form():
     print("go home")
     return render_template("home.html") # this should be the name of your html file
 
+
 @app.route('/store', methods=['POST'])
 def my_form_post():
     print("hello2")
-    af = request.files['user_af']
-    print(af)
+
+
     print("Storing af")
+    print("begin process")
+    print(request.files['user_af'])
+    af = request.files['user_af']
+    print(os.getcwd())
+    num_classes = 9
+    model_name = 'model_v1'
+    duration = 5000  # 5 sec
+    sr = 44100
+    channel = 2
+    shift_pct = 0.4
+    # Decide which device we want to run on
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+
+    # create model object
+    deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1', num_classes=num_classes)
+
+    # load generator
+    states = torch.load('models/' + model_name)
+    deepNet.load_state_dict(states['model_state_dict'])
+    deepNet.eval()
+    # process image
+    aud = AudioUtil.open(af)
+    reaud = AudioUtil.resample(aud, sr)
+    rechan = AudioUtil.rechannel(reaud, channel)
+    dur_aud = AudioUtil.pad_trunc(rechan, duration)
+    shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
+    sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
+    aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
+    use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    aug_sgram = use_transform(np.array(aug_sgram))
+    aug_sgram = torch.reshape(aug_sgram, (1, aug_sgram.shape[1], aug_sgram.shape[0], aug_sgram.shape[2]))
+    # print(aug_sgram.shape)
+    # aug_sgram = aug_sgram.to(device, dtype=torch.float)
+    output = deepNet(aug_sgram)
+    _, preds = torch.max(output, 1)
+    result = str(int(preds[0]))
+    print(result)
+
+    a = ["I found something over here", "Hey look here", "Check this out"]
+    b = ["Someone is entering our territory", "Intruder is very close!", "Back off!"]
+    c = ["Hello", "Hi", "I see you"]
+    d = ["Stop that!", "What are you doing!", "I'm warning you!"]
+    e = ["Me curious", "What's this?", "Huh?"]
+    f = ["Let's play", "Let's go outside", "Play with me!"]
+    g = ["This is fun!", "Let's go!", "Yay!"]
+    h = ["I'm lonely!", "I need company", "Is anybody there?"]
+    i = ["I want this!", "I need this!", "I'm hungry!"]
+    j = ["I'm hurt", "I'm frightened", "Ouch"]
+    all_letters = [a,b,c,d,e,f,g,h,i,j]
+
+    output = random.choice(all_letters[int(preds[0])])
+
+
+    return render_template("result.html", value=output)
+
     # print(request.form)
     # print(type(request.form['user_af']))
     # if request.method == 'POST':
@@ -1171,38 +1230,4 @@ def my_form_post():
     # # Saves the entity
     # datastore_client.put(audio_entry)
     # Initialize variables
-    print(os.getcwd())
-    num_classes = 9
-    model_name = 'model_v1'
-    duration = 5000 # 5 sec
-    sr = 44100
-    channel = 2
-    shift_pct = 0.4
-    # Decide which device we want to run on
-    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
-    
-    # create model object
-    deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1',num_classes=num_classes)
-    
-    # load generator
-    states = torch.load('models/'+model_name)
-    deepNet.load_state_dict(states['model_state_dict'])
-    deepNet.eval()
-    # process image
-    aud = AudioUtil.open(af)
-    reaud = AudioUtil.resample(aud, sr)
-    rechan = AudioUtil.rechannel(reaud, channel)
-    dur_aud = AudioUtil.pad_trunc(rechan, duration)
-    shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
-    sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
-    aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
-    use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-    aug_sgram = use_transform(np.array(aug_sgram))
-    aug_sgram = torch.reshape(aug_sgram, (1,aug_sgram.shape[1],aug_sgram.shape[0],aug_sgram.shape[2]))
-    #print(aug_sgram.shape)
-    #aug_sgram = aug_sgram.to(device, dtype=torch.float)
-    output = deepNet(aug_sgram)
-    _, preds = torch.max(output, 1)
-    result = str(int(preds[0]))
-    print(result)
-    return render_template("processing.html")
+
