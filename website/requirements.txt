@@ -1,2 +1,6 @@
 Flask==2.0.1
 google-cloud-texttospeech==2.5.2
+google-cloud=0.34.0
+torch==1.8.1#+cu111
+torchaudio==0.8.1
+torchvision==0.9.1#+cu111
