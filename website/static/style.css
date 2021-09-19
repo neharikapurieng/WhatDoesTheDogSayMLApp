@@ -1,3 +1,4 @@
+
 * {
   box-sizing: border-box;
   font-family: ubuntu;
@@ -26,15 +27,15 @@ h1 {
   color: #8F754F;
   text-align: center;
   font-weight: bold;
-  font-size: 90px;
+  font-size: 100px;
 }
 
 h3 {
   color: #8F754F;
   text-align: center;
-  font-weight: bold;
-  margin-top: -50px;
-  font-size: 28px;
+  font-weight: regular;
+  margin-top: 0px;
+  letter-spacing: -1px;
 }
 
 .result {
@@ -97,7 +98,7 @@ h3 {
 
 .google {
   border: 2px solid black;
-  background-color: #ffffff00;
+  background-color: white;
   color: black;
   padding: 14px 28px;
   font-size: 16px;
@@ -139,20 +140,11 @@ input[type="file"] {
     display: none;
 }
 .custom-file-upload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 12px 16px;
-    height: 45px;
-    cursor: pointer;
-    background-color: #5C8001;
-    color: white;
-    }
-
-
-.custom-file-upload:hover {
-  background-color: #385F71;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
 }
-
 .up {
   margin-left: 60%;
   background-color: #D7B377;
@@ -167,8 +159,4 @@ input[type="file"] {
 .up:hover {
   background-color: #8F754F;
 
-}
-
-.a {
-align: center;
 }

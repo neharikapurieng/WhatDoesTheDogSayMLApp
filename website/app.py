@@ -15,6 +15,7 @@ from torchaudio import transforms
 from IPython.display import Audio
 import sys
 import re
+import os
 import math
 import collections
 from functools import partial
@@ -1097,10 +1098,19 @@ def my_form():
 @app.route('/store', methods=['POST'])
 def my_form_post():
     print("hello2")
-    print(request.form)
-    af = request.form['user_af']
-    print(af)
-    print("Storing af")
+    # print(request.form)
+    # print(type(request.form['user_af']))
+    if request.method == 'POST':
+        print('inside post ')
+        #af = request.files['user_af']
+        save_pth = os.path.join('input', 'input_audio.wav')
+        print('type:'+str(type(request.files['user_af'])))
+        request.files['user_af'].save(save_pth)
+    # print("Storing af")
+    # print(type(af))
+    # print(type(af['user_af']))
+    #af.save(os.path.join(app.config['UPLOAD_FOLDER'], 'input_audio'))
+
 
     # # Instantiates a client
     # datastore_client = datastore.Client()
