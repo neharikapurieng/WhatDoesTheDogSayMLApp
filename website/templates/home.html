@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
 <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preload" as="image" href="static/img/Wave.gif">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
@@ -15,7 +16,8 @@
 
     <img id="logo" src="static/img/Logo 1.svg" class="center"> </img>
        <div class="d-grid gap-2 col-2 mx-auto" style="text-align:center">
-        <button class="btn" onclick="window.location.href='record.html'"><i class="fa fa-play"></i> Record</button>
+           <div id="button__group">
+        <button class="btn" type="button" id="record"><i class="fa fa-play"></i> Record</button>
 
 
         <label for="audio_file" class="custom-file-upload">
@@ -26,12 +28,138 @@
          <input type = "file" id="audio_file" name = "user_af" accept = ".wav,.mp3" />
       </form>
 
+           </div>
+
+
 
          <script>
             document.getElementById("audio_file").onchange = function() {
                  document.getElementById("uploadaudioform").submit();
              }
  </script>
+
+            <script>
+      window.addEventListener('DOMContentLoaded', async () => {
+        const recordButton = document.getElementById('record');
+        const logo = document.getElementById('logo');
+        const list = document.getElementById('recordings');
+        if ('MediaRecorder' in window) {
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: false
+              });
+              const mimeType = 'audio/mpeg-3';
+              let chunks = [];
+              const recorder = new MediaRecorder(stream, { type: mimeType });
+              recorder.addEventListener('dataavailable', event => {
+                if (typeof event.data === 'undefined') return;
+                if (event.data.size === 0) return;
+                chunks.push(event.data);
+              });
+              recorder.addEventListener('stop', () => {
+                const recording = new Blob(chunks, {
+                  type: mimeType
+                });
+                saveBlob(recording, "test.mp3");
+                chunks = [];
+              });
+              recordButton.addEventListener('click', () => {
+                if (recorder.state === 'inactive') {
+                  recorder.start();
+                  //recordButton.innerText = 'Stop';
+
+                    logo.src = "static/img/Wave.gif";
+                    logo.style.marginBottom = "-30px";
+                } else {
+                  recorder.stop();
+                  logo.src = "static/img/Logo 1.svg";
+                  logo.style.marginBottom = "0px";
+                  //recordButton.innerText = 'Done';
+                }
+              });
+            } catch {
+              renderError(
+                'You denied access to the microphone so this demo will not work.'
+              );
+            }
+        } else {
+          renderError(
+            "Sorry, your browser doesn't support the MediaRecorder API, so this demo will not work."
+          );
+        }
+      });
+
+      function renderError(message) {
+        const main = document.querySelector('main');
+        main.innerHTML = `<div class="error"><p>${message}</p></div>`;
+      }
+
+     function saveBlob(blob, fileName) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+
+
+      function renderRecording(blob, list) {
+        const blobUrl = URL.createObjectURL(blob);
+        const li = document.createElement('li');
+        const audio = document.createElement('audio');
+        const anchor = document.createElement('a');
+        anchor.setAttribute('href', blobUrl);
+        const now = new Date();
+        anchor.setAttribute(
+          'download',
+          `recording-${now.getFullYear()}-${(now.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}-${now
+            .getDay()
+            .toString()
+            .padStart(2, '0')}--${now
+            .getHours()
+            .toString()
+            .padStart(2, '0')}-${now
+            .getMinutes()
+            .toString()
+            .padStart(2, '0')}-${now
+            .getSeconds()
+            .toString()
+            .padStart(2, '0')}.webm`
+        );
+        anchor.innerText = 'Download';
+        audio.setAttribute('src', blobUrl);
+        audio.setAttribute('controls', 'controls');
+        li.appendChild(audio);
+        li.appendChild(anchor);
+        list.appendChild(li);
+
+
+      }
+
+
+
+    document.getElementById('record').onclick = function(){
+          console.log(document.getElementById('record').innerHTML);
+    if (document.getElementById('record').innerHTML === "<i class=\"fa fa-stop\"></i> Stop"){
+        document.getElementById('record').innerHTML = "<i class=\"fa fa-play\"></i> Record";
+
+    }
+    else
+    {
+        document.getElementById('record').innerHTML = "<i class=\"fa fa-stop\"></i> Stop";
+
+    }
+}
+</script>
+    </script>
 </div>
     <button class="google" id= "google"><img src="static/img/Google.svg"></img> Enabled</button>
     <a href="https://drive.google.com/uc?export=download&id=1g7rgAc0VXptaWIQLlE7NofUrt09dAcSb">

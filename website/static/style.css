@@ -172,3 +172,10 @@ input[type="file"] {
 .a {
 align: center;
 }
+
+.group__buttons{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
