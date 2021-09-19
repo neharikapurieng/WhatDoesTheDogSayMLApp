@@ -1196,9 +1196,10 @@ def my_form_post():
     all_letters = [a,b,c,d,e,f,g,h,i,j]
 
     output = random.choice(all_letters[int(preds[0])])
+    result = chr(int(preds[0])+97)
 
 
-    return render_template("result.html", value=output)
+    return render_template("result.html", value=output, result=result)
 
     # print(request.form)
     # print(type(request.form['user_af']))

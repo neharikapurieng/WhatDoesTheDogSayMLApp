@@ -23,4 +23,42 @@
     <button class="google"><img src = "static/img/Google.svg"></img> Enabled</button>
     <button class="up" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
   </body>
+
+<script>
+        var result = "{{result}}"
+        console.log(result)
+        // I bad at javascript
+
+        function play() {
+          /*
+            if (result == 'a'){
+                var items = Array("Check this out.mp3","Hey look here.mp3","I found something over here.mp3")
+            } else if (result == 'b'){
+                var items = Array("Back off!.mp3","Intruder is very close!.mp3","Someone is entering our territory!.mp3")
+            }else if (result == 'c'){
+                var items = Array("Hello.mp3","Hi.mp3","I see you.mp3")
+            }else if (result == 'd'){
+                var items = Array("I\'m warning you!.mp3","Stop that!.mp3","What are you doing!.mp3")
+            }else if (result == 'f'){
+                var items = Array("Let's go outside.mp3","Let's play.mp3","Play with me!.mp3")
+            }else if (result == 'g'){
+                var items = Array("Let's go!.mp3","This is fun!.mp3","Yay!.mp3")
+            }else if (result == 'h'){
+                var items = Array("I need companay.mp3","I'm lonely.mp3","Is anybody there.mp3")
+            }else if (result == 'i'){
+                var items = Array("I need this!.mp3","I want this!.mp3","I'm hungry!.mp3")
+            }else if (result == 'j'){
+                var items = Array("I'm frightened.mp3","I'm hurt.mp3","Ouch.mp3")
+            }
+            mp3_name = items[Math.floor(Math.random()*items.length)];
+
+           */
+            mp3_name = "{{value}}" + ".mp3"
+            var audio = document.getElementById("audio");
+            audio.src = 'static/texttospeechoutput/'+result+'/'+mp3_name
+            audio.play();
+        }
+      </script>
+    <input type="button" value="Play Audio" onclick="play()">
+    <audio id="audio"></audio>
 </html>
