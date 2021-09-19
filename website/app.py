@@ -10,6 +10,7 @@ import base64
 import json
 
 import math, random
+import torchvision
 import torchaudio
 from torchaudio import transforms
 from IPython.display import Audio
@@ -1131,8 +1132,9 @@ def my_form_post():
     # # Saves the entity
     # datastore_client.put(audio_entry)
     # Initialize variables
+    print(os.getcwd())
     num_classes = 9
-    model_name = 'models/dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
+    model_name = 'model_v1'
     duration = 5000 # 5 sec
     sr = 44100
     channel = 2
@@ -1144,11 +1146,11 @@ def my_form_post():
     deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1',num_classes=num_classes)
     
     # load generator
-    states = torch.load('../models/'+model_name)
+    states = torch.load('models/'+model_name)
     deepNet.load_state_dict(states['model_state_dict'])
     deepNet.eval()
     # process image
-    aud = AudioUtil.open(aud_bytes)
+    aud = AudioUtil.open(af)
     reaud = AudioUtil.resample(aud, sr)
     rechan = AudioUtil.rechannel(reaud, channel)
     dur_aud = AudioUtil.pad_trunc(rechan, duration)
@@ -1163,5 +1165,5 @@ def my_form_post():
     output = deepNet(aug_sgram)
     _, preds = torch.max(output, 1)
     result = str(int(preds[0]))
-
+    print(result)
     return render_template("processing.html")
