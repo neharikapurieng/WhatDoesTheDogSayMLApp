@@ -1,8 +1,11 @@
+-f https://download.pytorch.org/whl/torch_stable.html
 Flask==2.0.1
 google-cloud-texttospeech==2.5.2
-torch==1.8.1
-torchaudio==0.8.1
-torchvision==0.9.1
+torch==1.7.1+cpu
+torchvision==0.8.2+cpu
+torchaudio==0.7.2
 IPython==7.27.0
 PySoundFile==0.9.0
 flask_session==0.4.0
+gunicorn==20.0.4
+numpy==1.18.5
