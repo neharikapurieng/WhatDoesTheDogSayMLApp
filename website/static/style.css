@@ -57,6 +57,7 @@ h3 {
     -moz-box-shadow: none;
     box-shadow: none;
     margin-left: -350;
+    padding-top: 60px;
 
     resize: none; /*remove the resize handle on the bottom right*/
 }
@@ -336,4 +337,49 @@ h2 {
 
 .processing__text {
   display: none;
+}
+
+.button__group{
+  display: block;
+}
+
+.audio__btn {
+  border: 2px solid black;
+  background-color: #ffffff00;
+  color: black;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  border-color: #5C8001;
+  border-width: 5px;
+  font-weight: bold;
+  color: #5C8001;
+  border-radius: 5px;
+  margin-top: 50px;
+  margin-left: 20px;
+  font-size: 20px;
+}
+
+.speech-bubble {
+	position: relative;
+	border-radius: .4em;
+  display: block;
+  margin-top: 16px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+}
+
+.speech-bubble:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 170%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-bottom-color: #8F754F;
+	border-top: 0;
+	margin-left: -20px;
+	margin-top: -20px;
 }

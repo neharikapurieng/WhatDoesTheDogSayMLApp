@@ -16,11 +16,15 @@
     <h3> A webapp that lets you get inside your dog’s head </h3>
     <img id="logo" src ="static/img/Logo 3.svg" class="center"> </img>
     <div style="text-align: center; margin-left: -550px;" >
-    <h2 class="result"><textarea disabled ...id="w3review" style = "text-align: center;" name="w3review" rows="4" cols="35">
+    <h2 class="speech-bubble"><textarea disabled ...id="w3review" style = "text-align: center;" name="w3review" rows="4" cols="35">
       {{value}}
     </textarea></h2></div>
 <!--    <h2 class="result"> "I am Hungry" </h2>-->
-    <button class="google" id="google"><img src = "static/img/Google.svg"></img> Enabled</button>
+    <div class="button__group"><button class="google" id="google"><img src = "static/img/Google.svg"></img> Enabled</button>
+      <input type="button" class="audio__btn" value="Play Audio" onclick="play()">
+    <audio id="audio"></audio>
+      <button class="up" id="startover" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
+    </div>
 
     <form action="home" enctype="multipart/form-data" method="POST" className="wrapped__form" id="gohome" hidden>
          <input type = "text" id="placeholder" name = "placeholder" />
@@ -28,7 +32,7 @@
 
 
 
-    <button class="up" id="startover" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
+
   </body>
 
 <script>
@@ -74,8 +78,7 @@
         }
         }
       </script>
-    <input type="button" value="Play Audio" onclick="play()">
-    <audio id="audio"></audio>
+
 
 <script>
   document.getElementById('google').onclick = function() {
