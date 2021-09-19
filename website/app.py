@@ -1098,14 +1098,17 @@ def my_form():
 @app.route('/store', methods=['POST'])
 def my_form_post():
     print("hello2")
+    af = request.files['user_af']
+    print(af)
+    print("Storing af")
     # print(request.form)
     # print(type(request.form['user_af']))
-    if request.method == 'POST':
-        print('inside post ')
-        #af = request.files['user_af']
-        save_pth = os.path.join('input', 'input_audio.wav')
-        print('type:'+str(type(request.files['user_af'])))
-        request.files['user_af'].save(save_pth)
+    # if request.method == 'POST':
+    #     print('inside post ')
+    #     #af = request.files['user_af']
+    #     save_pth = os.path.join('input', 'input_audio.wav')
+    #     print('type:'+str(type(request.files['user_af'])))
+    #     request.files['user_af'].save(save_pth)
     # print("Storing af")
     # print(type(af))
     # print(type(af['user_af']))
