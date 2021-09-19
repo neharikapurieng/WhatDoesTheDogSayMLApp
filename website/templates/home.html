@@ -158,6 +158,7 @@
 
 
 
+
     document.getElementById('record').onclick = function(){
           console.log(document.getElementById('record').innerHTML);
     if (document.getElementById('record').innerHTML === "<i class=\"fa fa-stop\"></i> Stop"){
@@ -173,9 +174,27 @@
 </script>
     </script>
 </div>
-    <button class="google" id= "google"><img src="static/img/Google.svg"></img> Enabled</button>
+    <button class="google" id= "google"><img src='static/img/Google.svg'></img> Enabled</button>
     <a href="https://drive.google.com/uc?export=download&id=1g7rgAc0VXptaWIQLlE7NofUrt09dAcSb">
          <button class="download"><i class="fa fa-download"></i> Download Sample Data</button>
          </a>
+
+<script>document.getElementById('google').onclick = function() {
+    console.log(document.getElementById('google').innerHTML);
+if (document.getElementById('google').innerHTML !== "<img src=\"static/img/Google.svg\"> Disabled")
+{
+    document.getElementById('google').innerHTML="<img src=\"static/img/Google.svg\"> Disabled";
+    document.getElementById('google').style.borderColor="#385F71";
+    document.getElementById('google').style.color="#385F71";
+}
+else
+{
+    document.getElementById('google').innerHTML="<img src=\"static/img/Google.svg\"> Enabled";
+    document.getElementById('google').style.borderColor="#5C8001";
+    document.getElementById('google').style.color="#5C8001";
+}
+
+
+      }</script>
 </body>
 </html>

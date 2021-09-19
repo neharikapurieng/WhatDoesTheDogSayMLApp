@@ -20,7 +20,7 @@
       {{value}}
     </textarea></h2></div>
 <!--    <h2 class="result"> "I am Hungry" </h2>-->
-    <button class="google"><img src = "static/img/Google.svg"></img> Enabled</button>
+    <button class="google" id="google"><img src = "static/img/Google.svg"></img> Enabled</button>
     <button class="up" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
   </body>
 
@@ -53,12 +53,32 @@
             mp3_name = items[Math.floor(Math.random()*items.length)];
 
            */
+          console.log(document.getElementById('google').style.borderColor);
+          if(document.getElementById('google').innerHTML !== "<img src=\"static/img/Google.svg\"> Disabled"){
             mp3_name = "{{value}}" + ".mp3"
             var audio = document.getElementById("audio");
             audio.src = 'static/texttospeechoutput/'+result+'/'+mp3_name
             audio.play();
         }
+        }
       </script>
     <input type="button" value="Play Audio" onclick="play()">
     <audio id="audio"></audio>
+
+<script>
+  document.getElementById('google').onclick = function() {
+    console.log(document.getElementById('google').innerHTML);
+if (document.getElementById('google').innerHTML !== "<img src=\"static/img/Google.svg\"> Disabled")
+{
+    document.getElementById('google').innerHTML="<img src=\"static/img/Google.svg\"> Disabled";
+    document.getElementById('google').style.borderColor="#385F71";
+    document.getElementById('google').style.color="#385F71";
+}
+else
+{
+    document.getElementById('google').innerHTML="<img src=\"static/img/Google.svg\"> Enabled";
+    document.getElementById('google').style.borderColor="#5C8001";
+    document.getElementById('google').style.color="#5C8001";
+}}
+</script>
 </html>

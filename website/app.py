@@ -1184,7 +1184,7 @@ def my_form_post():
     print(result)
 
     a = ["I found something over here", "Hey look here", "Check this out"]
-    b = ["Someone is entering our territory", "Intruder is very close!", "Back off!"]
+    b = ["Someone is entering our territory!", "Intruder is very close!", "Back off!"]
     c = ["Hello", "Hi", "I see you"]
     d = ["Stop that!", "What are you doing!", "I'm warning you!"]
     e = ["Me curious", "What's this?", "Huh?"]
