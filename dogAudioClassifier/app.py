@@ -1,7 +1,6 @@
 from flask import Flask
-from flask import request
-from flask import render_template
-from google.cloud import datastore
+from flask import request, jsonify
+from flask_cors import CORS
 
 # FOR ml
 import torch
@@ -23,9 +22,8 @@ from torch.nn import functional as F
 from torch.utils import model_zoo
 
 app = Flask(__name__)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+CORS(app)
 
-###################################################################################################################
 # Util.py for EfficientNetNotRGB
 
 # Author: lukemelas (github username)
@@ -1087,68 +1085,56 @@ class AudioUtil():
       aug_spec = transforms.TimeMasking(time_mask_param)(aug_spec, mask_value)
 
     return aug_spec
-#######################################################################################################################
 
-@app.route('/')
-def my_form():
-    print("go home")
-    return render_template("home.html") # this should be the name of your html file
+@app.route('/evaluate', methods=['GET', 'POST'])
+def evaluate():
+    '''
+    evaluate dog_audio
+    '''
 
-@app.route('/store', methods=['POST'])
-def my_form_post():
-    print("hello2")
-    print(request.form)
-    af = request.form['user_af']
-    print(af)
-    print("Storing af")
+    if request.method == 'POST':
+        
+        file = request.files['file']
+        print(type(file))
+        aud_bytes = file.read()
+        print(type(aud_bytes))
+        # Initialize variables
+        num_classes = 9
+        model_name = 'dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
+        duration = 5000 # 5 sec
+        sr = 44100
+        channel = 2
+        shift_pct = 0.4
+        # Decide which device we want to run on
+        device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+        
+        # create model object
+        deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1',num_classes=num_classes)
+        
+        # load generator
+        states = torch.load('../models/'+model_name)
+        deepNet.load_state_dict(states['model_state_dict'])
+        deepNet.eval()
+        # process image
+        aud = AudioUtil.open(aud_bytes)
+        reaud = AudioUtil.resample(aud, sr)
+        rechan = AudioUtil.rechannel(reaud, channel)
+        dur_aud = AudioUtil.pad_trunc(rechan, duration)
+        shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
+        sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
+        aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
+        use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+        aug_sgram = use_transform(np.array(aug_sgram))
+        aug_sgram = torch.reshape(aug_sgram, (1,aug_sgram.shape[1],aug_sgram.shape[0],aug_sgram.shape[2]))
+        #print(aug_sgram.shape)
+        #aug_sgram = aug_sgram.to(device, dtype=torch.float)
+        output = deepNet(aug_sgram)
+        _, preds = torch.max(output, 1)
+        result = str(int(preds[0]))
+        return jsonify({'class_id': result})
+		
+#def main():
+#	app.run(host='127.0.0.1', port=3001, debug=True)
 
-    # # Instantiates a client
-    # datastore_client = datastore.Client()
-    #
-    # # The kind for the new entity
-    # kind = "AudioEntries"
-    # # The name/ID for the new entity
-    # # The Cloud Datastore key for the new entity
-    # task_key = datastore_client.key(kind)
-    #
-    # # Prepares the new entity
-    # audio_entry = datastore.Entity(key=task_key)
-    # audio_entry["audio_file"] = af
-    #
-    # # Saves the entity
-    # datastore_client.put(audio_entry)
-    # Initialize variables
-    num_classes = 9
-    model_name = 'models/dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
-    duration = 5000 # 5 sec
-    sr = 44100
-    channel = 2
-    shift_pct = 0.4
-    # Decide which device we want to run on
-    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
-    
-    # create model object
-    deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1',num_classes=num_classes)
-    
-    # load generator
-    states = torch.load('../models/'+model_name)
-    deepNet.load_state_dict(states['model_state_dict'])
-    deepNet.eval()
-    # process image
-    aud = AudioUtil.open(aud_bytes)
-    reaud = AudioUtil.resample(aud, sr)
-    rechan = AudioUtil.rechannel(reaud, channel)
-    dur_aud = AudioUtil.pad_trunc(rechan, duration)
-    shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
-    sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
-    aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
-    use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-    aug_sgram = use_transform(np.array(aug_sgram))
-    aug_sgram = torch.reshape(aug_sgram, (1,aug_sgram.shape[1],aug_sgram.shape[0],aug_sgram.shape[2]))
-    #print(aug_sgram.shape)
-    #aug_sgram = aug_sgram.to(device, dtype=torch.float)
-    output = deepNet(aug_sgram)
-    _, preds = torch.max(output, 1)
-    result = str(int(preds[0]))
-
-    return render_template("processing.html")
+if __name__ == '__main__':
+    app.run()
