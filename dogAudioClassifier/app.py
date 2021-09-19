@@ -1,6 +1,6 @@
 from flask import Flask
-from flask import request, jsonify
-from flask_cors import CORS
+from flask import request
+from flask import render_template
 
 # FOR ml
 import torch
@@ -22,8 +22,9 @@ from torch.nn import functional as F
 from torch.utils import model_zoo
 
 app = Flask(__name__)
-CORS(app)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
+###################################################################################################################
 # Util.py for EfficientNetNotRGB
 
 # Author: lukemelas (github username)
@@ -577,6 +578,7 @@ def load_pretrained_weights(model, model_name, weights_path=None, load_fc=True, 
     if verbose:
         print('Loaded pretrained weights for {}'.format(model_name))
 
+
 VALID_MODELS = (
     'efficientnet-b0', 'efficientnet-b1', 'efficientnet-b2', 'efficientnet-b3',
     'efficientnet-b4', 'efficientnet-b5', 'efficientnet-b6', 'efficientnet-b7',
@@ -687,6 +689,7 @@ class MBConvBlock(nn.Module):
             memory_efficient (bool): Whether to use memory-efficient version of swish.
         """
         self._swish = MemoryEfficientSwish() if memory_efficient else Swish()
+
 
 # Modified to fit Audio Inputs (2 channels)
 class EfficientNetNotRGB(nn.Module):
@@ -947,194 +950,218 @@ class EfficientNetNotRGB(nn.Module):
             Conv2d = get_same_padding_conv2d(image_size=self._global_params.image_size)
             out_channels = round_filters(32, self._global_params)
             self._conv_stem = Conv2d(in_channels, out_channels, kernel_size=3, stride=2, bias=False)
+
+
 # Audio Processing
-#src code - https://towardsdatascience.com/audio-deep-learning-made-simple-sound-classification-step-by-step-cebc936bbe5
+# src code - https://towardsdatascience.com/audio-deep-learning-made-simple-sound-classification-step-by-step-cebc936bbe5
 class AudioUtil():
-  # ----------------------------
-  # Load an audio file. Return the signal as a tensor and the sample rate
-  # ----------------------------
-  @staticmethod
-  def open(audio_file):
-    sig, sr = torchaudio.load(audio_file)
-    return (sig, sr)
     # ----------------------------
-  # Convert the given audio to the desired number of channels
-  # ----------------------------
-  @staticmethod
-  def rechannel(aud, new_channel):
-    sig, sr = aud
-
-    if (sig.shape[0] == new_channel):
-      # Nothing to do
-      return aud
-
-    if (new_channel == 1):
-      # Convert from stereo to mono by selecting only the first channel
-      resig = sig[:1, :]
-    else:
-      # Convert from mono to stereo by duplicating the first channel
-      resig = torch.cat([sig, sig])
-
-    return ((resig, sr))
+    # Load an audio file. Return the signal as a tensor and the sample rate
     # ----------------------------
-  # Since Resample applies to a single channel, we resample one channel at a time
-  # ----------------------------
-  @staticmethod
-  def resample(aud, newsr):
-    sig, sr = aud
+    @staticmethod
+    def open(audio_file):
+        sig, sr = torchaudio.load(audio_file)
+        return (sig, sr)
+        # ----------------------------
 
-    if (sr == newsr):
-      # Nothing to do
-      return aud
-
-    num_channels = sig.shape[0]
-    # Resample first channel
-    resig = torchaudio.transforms.Resample(sr, newsr)(sig[:1,:])
-    if (num_channels > 1):
-      # Resample the second channel and merge both channels
-      retwo = torchaudio.transforms.Resample(sr, newsr)(sig[1:,:])
-      resig = torch.cat([resig, retwo])
-
-    return ((resig, newsr))
+    # Convert the given audio to the desired number of channels
     # ----------------------------
-  # Convert the given audio to the desired number of channels
-  # ----------------------------
-  @staticmethod
-  def rechannel(aud, new_channel):
-    sig, sr = aud
+    @staticmethod
+    def rechannel(aud, new_channel):
+        sig, sr = aud
 
-    if (sig.shape[0] == new_channel):
-      # Nothing to do
-      return aud
+        if (sig.shape[0] == new_channel):
+            # Nothing to do
+            return aud
 
-    if (new_channel == 1):
-      # Convert from stereo to mono by selecting only the first channel
-      resig = sig[:1, :]
-    else:
-      # Convert from mono to stereo by duplicating the first channel
-      resig = torch.cat([sig, sig])
+        if (new_channel == 1):
+            # Convert from stereo to mono by selecting only the first channel
+            resig = sig[:1, :]
+        else:
+            # Convert from mono to stereo by duplicating the first channel
+            resig = torch.cat([sig, sig])
 
-    return ((resig, sr))
+        return ((resig, sr))
+        # ----------------------------
+
+    # Since Resample applies to a single channel, we resample one channel at a time
     # ----------------------------
-  # Pad (or truncate) the signal to a fixed length 'max_ms' in milliseconds
-  # ----------------------------
-  @staticmethod
-  def pad_trunc(aud, max_ms):
-    sig, sr = aud
-    num_rows, sig_len = sig.shape
-    max_len = sr//1000 * max_ms
+    @staticmethod
+    def resample(aud, newsr):
+        sig, sr = aud
 
-    if (sig_len > max_len):
-      # Truncate the signal to the given length
-      sig = sig[:,:max_len]
+        if (sr == newsr):
+            # Nothing to do
+            return aud
 
-    elif (sig_len < max_len):
-      # Length of padding to add at the beginning and end of the signal
-      pad_begin_len = random.randint(0, max_len - sig_len)
-      pad_end_len = max_len - sig_len - pad_begin_len
+        num_channels = sig.shape[0]
+        # Resample first channel
+        resig = torchaudio.transforms.Resample(sr, newsr)(sig[:1, :])
+        if (num_channels > 1):
+            # Resample the second channel and merge both channels
+            retwo = torchaudio.transforms.Resample(sr, newsr)(sig[1:, :])
+            resig = torch.cat([resig, retwo])
 
-      # Pad with 0s
-      pad_begin = torch.zeros((num_rows, pad_begin_len))
-      pad_end = torch.zeros((num_rows, pad_end_len))
+        return ((resig, newsr))
+        # ----------------------------
 
-      sig = torch.cat((pad_begin, sig, pad_end), 1)
-      
-    return (sig, sr)
+    # Convert the given audio to the desired number of channels
     # ----------------------------
-  # Shifts the signal to the left or right by some percent. Values at the end
-  # are 'wrapped around' to the start of the transformed signal.
-  # ----------------------------
-  @staticmethod
-  def time_shift(aud, shift_limit):
-    sig,sr = aud
-    _, sig_len = sig.shape
-    shift_amt = int(random.random() * shift_limit * sig_len)
-    return (sig.roll(shift_amt), sr)
+    @staticmethod
+    def rechannel(aud, new_channel):
+        sig, sr = aud
+
+        if (sig.shape[0] == new_channel):
+            # Nothing to do
+            return aud
+
+        if (new_channel == 1):
+            # Convert from stereo to mono by selecting only the first channel
+            resig = sig[:1, :]
+        else:
+            # Convert from mono to stereo by duplicating the first channel
+            resig = torch.cat([sig, sig])
+
+        return ((resig, sr))
+        # ----------------------------
+
+    # Pad (or truncate) the signal to a fixed length 'max_ms' in milliseconds
     # ----------------------------
-  # Generate a Spectrogram
-  # ----------------------------
-  @staticmethod
-  def spectro_gram(aud, n_mels=64, n_fft=1024, hop_len=None):
-    sig,sr = aud
-    top_db = 80
+    @staticmethod
+    def pad_trunc(aud, max_ms):
+        sig, sr = aud
+        num_rows, sig_len = sig.shape
+        max_len = sr // 1000 * max_ms
 
-    # spec has shape [channel, n_mels, time], where channel is mono, stereo etc
-    spec = transforms.MelSpectrogram(sr, n_fft=n_fft, hop_length=hop_len, n_mels=n_mels)(sig)
+        if (sig_len > max_len):
+            # Truncate the signal to the given length
+            sig = sig[:, :max_len]
 
-    # Convert to decibels
-    spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
-    return (spec)
-# ----------------------------
-  # Augment the Spectrogram by masking out some sections of it in both the frequency
-  # dimension (ie. horizontal bars) and the time dimension (vertical bars) to prevent
-  # overfitting and to help the model generalise better. The masked sections are
-  # replaced with the mean value.
-  # ----------------------------
-  @staticmethod
-  def spectro_augment(spec, max_mask_pct=0.1, n_freq_masks=1, n_time_masks=1):
-    _, n_mels, n_steps = spec.shape
-    mask_value = spec.mean()
-    aug_spec = spec
+        elif (sig_len < max_len):
+            # Length of padding to add at the beginning and end of the signal
+            pad_begin_len = random.randint(0, max_len - sig_len)
+            pad_end_len = max_len - sig_len - pad_begin_len
 
-    freq_mask_param = max_mask_pct * n_mels
-    for _ in range(n_freq_masks):
-      aug_spec = transforms.FrequencyMasking(freq_mask_param)(aug_spec, mask_value)
+            # Pad with 0s
+            pad_begin = torch.zeros((num_rows, pad_begin_len))
+            pad_end = torch.zeros((num_rows, pad_end_len))
 
-    time_mask_param = max_mask_pct * n_steps
-    for _ in range(n_time_masks):
-      aug_spec = transforms.TimeMasking(time_mask_param)(aug_spec, mask_value)
+            sig = torch.cat((pad_begin, sig, pad_end), 1)
 
-    return aug_spec
+        return (sig, sr)
+        # ----------------------------
 
-@app.route('/evaluate', methods=['GET', 'POST'])
-def evaluate():
-    '''
-    evaluate dog_audio
-    '''
+    # Shifts the signal to the left or right by some percent. Values at the end
+    # are 'wrapped around' to the start of the transformed signal.
+    # ----------------------------
+    @staticmethod
+    def time_shift(aud, shift_limit):
+        sig, sr = aud
+        _, sig_len = sig.shape
+        shift_amt = int(random.random() * shift_limit * sig_len)
+        return (sig.roll(shift_amt), sr)
+        # ----------------------------
 
-    if request.method == 'POST':
-        
-        file = request.files['file']
-        print(type(file))
-        aud_bytes = file.read()
-        print(type(aud_bytes))
-        # Initialize variables
-        num_classes = 9
-        model_name = 'dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
-        duration = 5000 # 5 sec
-        sr = 44100
-        channel = 2
-        shift_pct = 0.4
-        # Decide which device we want to run on
-        device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
-        
-        # create model object
-        deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1',num_classes=num_classes)
-        
-        # load generator
-        states = torch.load('../models/'+model_name)
-        deepNet.load_state_dict(states['model_state_dict'])
-        deepNet.eval()
-        # process image
-        aud = AudioUtil.open(aud_bytes)
-        reaud = AudioUtil.resample(aud, sr)
-        rechan = AudioUtil.rechannel(reaud, channel)
-        dur_aud = AudioUtil.pad_trunc(rechan, duration)
-        shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
-        sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
-        aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
-        use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-        aug_sgram = use_transform(np.array(aug_sgram))
-        aug_sgram = torch.reshape(aug_sgram, (1,aug_sgram.shape[1],aug_sgram.shape[0],aug_sgram.shape[2]))
-        #print(aug_sgram.shape)
-        #aug_sgram = aug_sgram.to(device, dtype=torch.float)
-        output = deepNet(aug_sgram)
-        _, preds = torch.max(output, 1)
-        result = str(int(preds[0]))
-        return jsonify({'class_id': result})
-		
-#def main():
-#	app.run(host='127.0.0.1', port=3001, debug=True)
+    # Generate a Spectrogram
+    # ----------------------------
+    @staticmethod
+    def spectro_gram(aud, n_mels=64, n_fft=1024, hop_len=None):
+        sig, sr = aud
+        top_db = 80
 
-if __name__ == '__main__':
-    app.run()
+        # spec has shape [channel, n_mels, time], where channel is mono, stereo etc
+        spec = transforms.MelSpectrogram(sr, n_fft=n_fft, hop_length=hop_len, n_mels=n_mels)(sig)
+
+        # Convert to decibels
+        spec = transforms.AmplitudeToDB(top_db=top_db)(spec)
+        return (spec)
+
+    # ----------------------------
+    # Augment the Spectrogram by masking out some sections of it in both the frequency
+    # dimension (ie. horizontal bars) and the time dimension (vertical bars) to prevent
+    # overfitting and to help the model generalise better. The masked sections are
+    # replaced with the mean value.
+    # ----------------------------
+    @staticmethod
+    def spectro_augment(spec, max_mask_pct=0.1, n_freq_masks=1, n_time_masks=1):
+        _, n_mels, n_steps = spec.shape
+        mask_value = spec.mean()
+        aug_spec = spec
+
+        freq_mask_param = max_mask_pct * n_mels
+        for _ in range(n_freq_masks):
+            aug_spec = transforms.FrequencyMasking(freq_mask_param)(aug_spec, mask_value)
+
+        time_mask_param = max_mask_pct * n_steps
+        for _ in range(n_time_masks):
+            aug_spec = transforms.TimeMasking(time_mask_param)(aug_spec, mask_value)
+
+        return aug_spec
+
+
+#######################################################################################################################
+
+@app.route('/')
+def my_form():
+    print("go home")
+    return render_template("home.html")  # this should be the name of your html file
+
+
+@app.route('/store', methods=['POST'])
+def my_form_post():
+    print("hello2")
+    print(request.form)
+    af = request.form['user_af']
+    print(af)
+    print("Storing af")
+
+    # # Instantiates a client
+    # datastore_client = datastore.Client()
+    #
+    # # The kind for the new entity
+    # kind = "AudioEntries"
+    # # The name/ID for the new entity
+    # # The Cloud Datastore key for the new entity
+    # task_key = datastore_client.key(kind)
+    #
+    # # Prepares the new entity
+    # audio_entry = datastore.Entity(key=task_key)
+    # audio_entry["audio_file"] = af
+    #
+    # # Saves the entity
+    # datastore_client.put(audio_entry)
+    # Initialize variables
+    num_classes = 9
+    model_name = 'models/dog_audio_effB1_ep150/dog_audio_effB1_ep150val_acc_0.7142857142857143val_loss_0.10887178033590317'
+    duration = 5000  # 5 sec
+    sr = 44100
+    channel = 2
+    shift_pct = 0.4
+    # Decide which device we want to run on
+    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+
+    # create model object
+    deepNet = EfficientNetNotRGB.from_pretrained('efficientnet-b1', num_classes=num_classes)
+
+    # load generator
+    states = torch.load('../models/' + model_name)
+    deepNet.load_state_dict(states['model_state_dict'])
+    deepNet.eval()
+    # process image
+    aud = AudioUtil.open(aud_bytes)
+    reaud = AudioUtil.resample(aud, sr)
+    rechan = AudioUtil.rechannel(reaud, channel)
+    dur_aud = AudioUtil.pad_trunc(rechan, duration)
+    shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)
+    sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)
+    aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)
+    use_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    aug_sgram = use_transform(np.array(aug_sgram))
+    aug_sgram = torch.reshape(aug_sgram, (1, aug_sgram.shape[1], aug_sgram.shape[0], aug_sgram.shape[2]))
+    # print(aug_sgram.shape)
+    # aug_sgram = aug_sgram.to(device, dtype=torch.float)
+    output = deepNet(aug_sgram)
+    _, preds = torch.max(output, 1)
+    result = str(int(preds[0]))
+
+    return render_template("processing.html")
