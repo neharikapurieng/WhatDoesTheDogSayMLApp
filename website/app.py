@@ -1098,7 +1098,7 @@ def my_form():
 def my_form_post():
     print("hello2")
     print(request.form)
-    af = request.form['user_af']
+    af = request.files['user_af']
     print(af)
     print("Storing af")
 
