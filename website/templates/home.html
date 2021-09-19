@@ -43,6 +43,8 @@
                 document.getElementById('label').style.display='none';
                 document.getElementById('record').style.display='none';
                 document.getElementById('audio_file').style.display='none';
+                document.getElementById('download').style.marginTop='-6px';
+                document.getElementById('google').style.marginTop='-6px';
                 document.getElementById('woofs').style.display='block';
                 document.getElementById('moments').style.display='block';
                  document.getElementById("uploadaudioform").submit();
@@ -73,7 +75,7 @@
                 const recording = new Blob(chunks, {
                   type: mimeType
                 });
-                saveBlob(recording, "test.mp3");
+                saveBlob(recording, "recording.mp3");
                 chunks = [];
               });
               recordButton.addEventListener('click', () => {
@@ -174,10 +176,12 @@
 </script>
     </script>
 </div>
+    <div class="bbuttons">
     <button class="google" id= "google"><img src='static/img/Google.svg'></img> Enabled</button>
     <a href="https://drive.google.com/uc?export=download&id=1g7rgAc0VXptaWIQLlE7NofUrt09dAcSb">
-         <button class="download"><i class="fa fa-download"></i> Download Sample Data</button>
+         <button class="download" id="download"><i class="fa fa-download"></i> Download Sample Data</button>
          </a>
+        </div>
 
 <script>document.getElementById('google').onclick = function() {
     console.log(document.getElementById('google').innerHTML);

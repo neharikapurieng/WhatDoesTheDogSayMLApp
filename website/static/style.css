@@ -90,6 +90,7 @@ h3 {
   padding: 12px 16px;
   font-size: 16px;
   cursor: pointer;
+  margin-right: -20px;
 }
 
 .upload:hover {
@@ -111,20 +112,20 @@ h3 {
   margin-top: 50px;
   margin-left: 100px;
   font-size: 20px;
+  display: inline-block;
 }
 
 
 
 
 .download {
-  margin-left: 60%;
   background-color: #D7B377;
   border: none;
   color: white;
   padding: 12px 30px;
   cursor: pointer;
   font-size: 20px;
-  border-radius: 500px;
+  white-space: nowrap;
 
 }
 
@@ -152,14 +153,18 @@ input[type="file"] {
 }
 
 .up {
-  margin-left: 60%;
+
   background-color: #D7B377;
   border: none;
   color: white;
   padding: 12px 60px;
   cursor: pointer;
   font-size: 20px;
-  border-radius: 500px;
+  border-radius: 50px;
+
+  position: absolute;
+  top: 630px;
+  right: 200px;
 }
 
 .up:hover {
@@ -269,6 +274,7 @@ h3 {
   border-radius: 5px;
   margin-left: 100px;
   font-size: 20px;
+  display: inline-flex;
 }
 
 
@@ -298,6 +304,7 @@ h3 {
   padding: 12px 60px;
   cursor: pointer;
   font-size: 20px;
+  display: inline-block;
 }
 
 .up:hover {
@@ -340,7 +347,12 @@ h2 {
 }
 
 .button__group{
-  display: block;
+  white-space: nowrap;
+  display: inline-block;
+   margin-top: -20px;
+  width: 80%;
+
+
 }
 
 .audio__btn {
@@ -355,9 +367,13 @@ h2 {
   font-weight: bold;
   color: #5C8001;
   border-radius: 5px;
-  margin-top: 50px;
   margin-left: 20px;
   font-size: 20px;
+
+position: absolute;
+  top: 626px;
+  right: 800px;
+
 }
 
 .speech-bubble {
@@ -383,3 +399,10 @@ h2 {
 	margin-left: -20px;
 	margin-top: -20px;
 }
+
+.bbuttons {
+   white-space: nowrap;
+   margin-top: -20px;
+  width: 80%;
+}
+
