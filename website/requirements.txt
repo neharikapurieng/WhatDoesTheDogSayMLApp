@@ -5,3 +5,4 @@ torchaudio==0.8.1
 torchvision==0.9.1
 IPython==7.27.0
 PySoundFile==0.9.0
+flask_session==0.4.0
