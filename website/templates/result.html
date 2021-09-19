@@ -21,10 +21,22 @@
     </textarea></h2></div>
 <!--    <h2 class="result"> "I am Hungry" </h2>-->
     <button class="google" id="google"><img src = "static/img/Google.svg"></img> Enabled</button>
-    <button class="up" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
+
+    <form action="home" enctype="multipart/form-data" method="POST" className="wrapped__form" id="gohome" hidden>
+         <input type = "text" id="placeholder" name = "placeholder" />
+    </form>
+
+
+
+    <button class="up" id="startover" onclick="window.location.href='index.html'"><i class= "fa fa-refresh"></i> Start Over</button>
   </body>
 
 <script>
+
+   document.getElementById("startover").onclick = function() {
+     document.getElementById("gohome").submit();
+    }
+
         var result = "{{result}}"
         console.log(result)
         // I bad at javascript

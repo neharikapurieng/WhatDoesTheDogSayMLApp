@@ -1139,6 +1139,11 @@ def my_form():
     return render_template("home.html") # this should be the name of your html file
 
 
+@app.route('/home', methods=['POST'])
+def go_home():
+    print("go home")
+    return render_template("home.html") # this should be the name of your html file
+
 @app.route('/store', methods=['POST'])
 def my_form_post():
     print("hello2")
